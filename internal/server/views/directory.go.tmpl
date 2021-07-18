@@ -1,0 +1,18 @@
+{{define "content"}}
+  <table>
+    <thead>
+      <tr>
+        <th>name</th>
+      </tr>
+    </thead>
+      {{range .Files}}
+        <tr>
+          <td>
+            <a href="{{.Path}}">{{.Name}}</a>
+          </td>
+        </tr>
+      {{end}}
+    <tbody>
+    </tbody>
+  </table>
+{{end}}

@@ -16,22 +16,22 @@ type Server struct {
 	router  *mux.Router
 }
 
-func NewServer(dir string) Server {
-	return Server{
+func NewServer(dir string) *Server {
+	return &Server{
 		baseDir: dir,
 	}
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if s.router == nil {
-		s.setupRoutes()
+		s.initRoutes()
 	}
 
 	router := handlers.LoggingHandler(os.Stdout, s.router)
 	router.ServeHTTP(w, r)
 }
 
-func (s *Server) setupRoutes() {
+func (s *Server) initRoutes() {
 	s.router = mux.NewRouter()
 
 	s.router.PathPrefix("/").Handler(s.handleFile()).Methods("GET")
@@ -40,7 +40,7 @@ func (s *Server) setupRoutes() {
 func (s *Server) handleFile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		path := filepath.Join(s.baseDir, r.URL.Path)
-		file, err := files.Info(path)
+		file, err := files.Info(s.baseDir, path)
 		if err != nil {
 			s.handleFileError(err, w, r)
 			return
@@ -49,12 +49,17 @@ func (s *Server) handleFile() http.HandlerFunc {
 		switch file.Type {
 		case files.Directory:
 			// TODO: Show list of files in a table.
-			files, err := files.List(path)
+			contents, err := files.List(s.baseDir, path)
 			if err != nil {
 				s.handleFileError(err, w, r)
 				return
 			}
-			fmt.Fprint(w, files)
+
+			s.render(w, "directory", struct {
+				Files []files.File
+			}{
+				Files: contents,
+			})
 		case files.SomeFile:
 			// TODO: Show file contents.
 			fmt.Fprint(w, file)
