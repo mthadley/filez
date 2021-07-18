@@ -3,8 +3,10 @@ package server
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"path/filepath"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/mthadley/filez/internal/files"
 )
@@ -25,7 +27,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		s.setupRoutes()
 	}
 
-	s.router.ServeHTTP(w, r)
+	router := handlers.LoggingHandler(os.Stdout, s.router)
+	router.ServeHTTP(w, r)
 }
 
 func (s *Server) setupRoutes() {
