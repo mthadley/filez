@@ -4,20 +4,8 @@ import (
 	"io/fs"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
-)
-
-type File struct {
-	Name string
-	Type FileType
-	Path string
-}
-
-type FileType = int
-
-const (
-	Directory = iota
-	SomeFile
 )
 
 func Info(base, path string) (File, error) {
@@ -26,7 +14,7 @@ func Info(base, path string) (File, error) {
 		return File{}, err
 	}
 
-	return fromFileInfo(base, path, fileInfo), nil
+	return fromFileInfo(base, filepath.Dir(path), fileInfo), nil
 }
 
 func List(base, dir string) ([]File, error) {
@@ -53,7 +41,31 @@ func fromFileInfo(base, path string, fileInfo fs.FileInfo) File {
 	}
 
 	file.Name = fileInfo.Name()
+	file.base = base
 	file.Path = strings.Replace(path, base, "", 1) + "/" + file.Name
 
 	return file
+}
+
+type File struct {
+	Name string
+	Type FileType
+	Path string
+	base string
+}
+
+type FileType = int
+
+const (
+	Directory = iota
+	SomeFile
+)
+
+func (f File) Content() string {
+	content, err := ioutil.ReadFile(f.base + f.Path)
+	if err != nil {
+		return "Unable to read file"
+	}
+
+	return string(content)
 }

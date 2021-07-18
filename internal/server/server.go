@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -48,7 +47,6 @@ func (s *Server) handleFile() http.HandlerFunc {
 
 		switch file.Type {
 		case files.Directory:
-			// TODO: Show list of files in a table.
 			contents, err := files.List(s.baseDir, path)
 			if err != nil {
 				s.handleFileError(err, w, r)
@@ -61,8 +59,7 @@ func (s *Server) handleFile() http.HandlerFunc {
 				Files: contents,
 			})
 		case files.SomeFile:
-			// TODO: Show file contents.
-			fmt.Fprint(w, file)
+			s.render(w, "file", file)
 		}
 	}
 }
