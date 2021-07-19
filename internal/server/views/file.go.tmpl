@@ -2,7 +2,10 @@
   <a href="{{.ParentPath}}">..</a>
 
   <h2>{{.Path}}</h2>
-  <small>Size: {{.HumanSize}}, Last Modified: {{.HumanLastModified}}</small>
+  <small>
+    Size: <b>{{.HumanSize}}</b>,
+    Last Modified: <b>{{.HumanLastModified}}</b>
+  </small>
 
   <pre>
     {{- .Content}}
