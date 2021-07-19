@@ -1,11 +1,16 @@
 package files
 
 import (
+	"bytes"
+	"html/template"
 	"io/fs"
 	"path/filepath"
 	"strings"
 	"time"
 
+	"github.com/alecthomas/chroma/formatters/html"
+	"github.com/alecthomas/chroma/lexers"
+	"github.com/alecthomas/chroma/styles"
 	"github.com/dustin/go-humanize"
 )
 
@@ -43,13 +48,42 @@ func fromFileInfo(base *fs.FS, path string, fileInfo fs.FileInfo) File {
 	}
 }
 
-func (f File) Content() string {
+func (f File) Content() template.HTML {
 	content, err := fs.ReadFile(*f.base, normalizePath(f.path))
 	if err != nil {
 		return "Unable to read file"
 	}
 
-	return strings.TrimSpace(string(content))
+	fallback := template.HTML("<pre>" + strings.TrimSpace(string(content)) + "</pre>")
+
+	buf := new(bytes.Buffer)
+
+	lexer := lexers.Match(f.Name)
+	if lexer == nil {
+		lexer = lexers.Fallback
+	}
+
+	formatter := html.New(
+		html.Standalone(false),
+		html.WithLineNumbers(true),
+	)
+
+	style := styles.Get("friendly")
+	if style == nil {
+		style = styles.Fallback
+	}
+
+	it, err := lexer.Tokenise(nil, string(content))
+	if err != nil {
+		return fallback
+	}
+
+	err = formatter.Format(buf, style, it)
+	if err != nil {
+		return fallback
+	}
+
+	return template.HTML(buf.String())
 }
 
 func (f File) EmojiIcon() (icon string) {
