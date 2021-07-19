@@ -25,8 +25,12 @@ pre {
   padding: 10px;
 }
 
-table {
+.table-container {
   overflow-x: auto;
+}
+
+.table-container > table {
+  white-space: nowrap;
 }
 
 td {

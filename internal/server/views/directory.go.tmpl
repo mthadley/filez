@@ -1,28 +1,30 @@
 {{define "content"}}
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Size</th>
-        <th>Last Modified</th>
-      </tr>
-    </thead>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Size</th>
+          <th>Last Modified</th>
+        </tr>
+      </thead>
 
-    <tbody>
-      {{if not .File.IsRoot}}
-        <tr>
-          <td><a href="{{.File.ParentPath}}">..</a></td>
-          <td></td>
-          <td></td>
-        <tr>
-      {{end}}
+      <tbody>
+        {{if not .File.IsRoot}}
+          <tr>
+            <td><a href="{{.File.ParentPath}}">..</a></td>
+            <td></td>
+            <td></td>
+          <tr>
+        {{end}}
 
-      {{range .Files}}
-        <tr>
-          <td>{{.EmojiIcon}} <a href="{{.Path}}">{{.Name}}</a></td>
-          <td>{{.HumanSize}}</td>
-          <td>{{.HumanLastModified}}</td>
-      {{end}}
-    </tbody>
-  </table>
+        {{range .Files}}
+          <tr>
+            <td>{{.EmojiIcon}} <a href="{{.Path}}">{{.Name}}</a></td>
+            <td>{{.HumanSize}}</td>
+            <td>{{.HumanLastModified}}</td>
+        {{end}}
+      </tbody>
+    </table>
+  </div>
 {{end}}
