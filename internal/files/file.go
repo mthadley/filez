@@ -1,7 +1,6 @@
 package files
 
 import (
-	"fmt"
 	"io/fs"
 	"io/ioutil"
 	"path/filepath"
@@ -34,8 +33,6 @@ func fromFileInfo(base, path string, fileInfo fs.FileInfo) File {
 	} else {
 		type_ = SomeFile
 	}
-
-	fmt.Println(path, base)
 
 	return File{
 		Type:    type_,
