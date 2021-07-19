@@ -5,6 +5,8 @@
         <th>Name</th>
       </tr>
     </thead>
+
+    <tbody>
       {{if not .File.IsRoot}}
         <tr>
           <td><a href="{{.File.ParentPath}}">..</a></td>
@@ -18,7 +20,6 @@
           </td>
         </tr>
       {{end}}
-    <tbody>
     </tbody>
   </table>
 {{end}}
