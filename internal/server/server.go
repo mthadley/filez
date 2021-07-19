@@ -74,5 +74,6 @@ func (s *Server) handleFile() http.HandlerFunc {
 }
 
 func (s *Server) handleFileError(err error, w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "File not found", 404)
+	w.WriteHeader(http.StatusNotFound)
+	s.render(w, "not_found", r.URL.Path)
 }
