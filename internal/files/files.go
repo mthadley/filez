@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 )
 
@@ -27,6 +28,8 @@ func List(base, dir string) ([]File, error) {
 	for i, file := range files {
 		result[i] = fromFileInfo(base, dir, file)
 	}
+
+	sort.Sort(SortByFileType(result))
 
 	return result, nil
 }

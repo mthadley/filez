@@ -34,3 +34,17 @@ func (f File) EmojiIcon() (icon string) {
 	}
 	return
 }
+
+// Custom sort for File: Directories come firs, then sorting by Name alphabetically.
+type SortByFileType []File
+
+func (files SortByFileType) Len() int  { return len(files) }
+func (f SortByFileType) Swap(i, j int) { f[i], f[j] = f[j], f[i] }
+func (files SortByFileType) Less(i, j int) bool {
+	a, b := files[i], files[j]
+	if a.Type == b.Type {
+		return a.Name < b.Name
+	} else {
+		return a.Type < b.Type
+	}
+}
