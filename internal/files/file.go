@@ -79,7 +79,7 @@ func (f File) Path() string {
 }
 
 func (f File) ParentPath() string {
-	return filepath.Dir("/" + f.path)
+	return filepath.Dir(f.Path())
 }
 
 // Custom sort for File: Directories come firs, then sorting by Name alphabetically.
