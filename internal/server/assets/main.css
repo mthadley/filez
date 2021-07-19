@@ -1,3 +1,7 @@
+:root {
+  --lightBg: #EEE;
+}
+
 body {
   display: flex;
   flex-direction: column;
@@ -16,5 +20,7 @@ footer {
 }
 
 pre {
+  background-color: var(--lightBg);
   overflow-x: auto;
+  padding: 10px;
 }
