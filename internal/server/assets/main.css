@@ -28,3 +28,15 @@ pre {
 table {
   overflow-x: auto;
 }
+
+td {
+  padding-right: 15px;
+}
+
+td:last-child {
+  padding-right: 0;
+}
+
+th {
+  text-align: left;
+}

@@ -3,6 +3,8 @@
     <thead>
       <tr>
         <th>Name</th>
+        <th>Size</th>
+        <th>Last Modified</th>
       </tr>
     </thead>
 
@@ -10,15 +12,16 @@
       {{if not .File.IsRoot}}
         <tr>
           <td><a href="{{.File.ParentPath}}">..</a></td>
+          <td></td>
+          <td></td>
         <tr>
       {{end}}
 
       {{range .Files}}
         <tr>
-          <td>
-            {{.EmojiIcon}} <a href="{{.Path}}">{{.Name}}</a>
-          </td>
-        </tr>
+          <td>{{.EmojiIcon}} <a href="{{.Path}}">{{.Name}}</a></td>
+          <td>{{.HumanSize}}</td>
+          <td>{{.HumanLastModified}}</td>
       {{end}}
     </tbody>
   </table>

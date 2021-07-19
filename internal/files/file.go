@@ -6,13 +6,18 @@ import (
 	"io/ioutil"
 	"path/filepath"
 	"strings"
+	"time"
+
+	"github.com/dustin/go-humanize"
 )
 
 type File struct {
-	Name string
-	Type FileType
-	Path string
-	base string
+	Name    string
+	Type    FileType
+	Path    string
+	base    string
+	size    uint64
+	modTime time.Time
 }
 
 type FileType = int
@@ -23,20 +28,23 @@ const (
 )
 
 func fromFileInfo(base, path string, fileInfo fs.FileInfo) File {
-	file := File{}
-
+	var type_ FileType
 	if fileInfo.IsDir() {
-		file.Type = Directory
+		type_ = Directory
 	} else {
-		file.Type = SomeFile
+		type_ = SomeFile
 	}
 
 	fmt.Println(path, base)
-	file.Name = fileInfo.Name()
-	file.base = base
-	file.Path = strings.Replace(path+"/"+file.Name, base, "", 1)
 
-	return file
+	return File{
+		Type:    type_,
+		Name:    fileInfo.Name(),
+		base:    base,
+		Path:    strings.Replace(path+"/"+fileInfo.Name(), base, "", 1),
+		size:    uint64(fileInfo.Size()),
+		modTime: fileInfo.ModTime(),
+	}
 }
 func (f File) Content() string {
 	content, err := ioutil.ReadFile(f.base + f.Path)
@@ -55,6 +63,14 @@ func (f File) EmojiIcon() (icon string) {
 		icon = "📄"
 	}
 	return
+}
+
+func (f File) HumanSize() string {
+	return humanize.Bytes(f.size)
+}
+
+func (f File) HumanLastModified() string {
+	return humanize.Time(f.modTime)
 }
 
 func (f File) IsRoot() bool {
