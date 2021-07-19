@@ -19,7 +19,7 @@ func main() {
 	base := os.DirFS(baseDir)
 	server := server.NewServer(base)
 
-	fmt.Println("Starting server...")
+	fmt.Printf("Serving folder %s at localhost:8080...\n\n", baseDir)
 
 	err = http.ListenAndServe(":8080", server)
 	if err != nil {

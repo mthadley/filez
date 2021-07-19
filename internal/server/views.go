@@ -23,7 +23,6 @@ func (s *Server) render(w http.ResponseWriter, name string, data interface{}) {
 			return
 		}
 
-		fmt.Println("saving for later")
 		views, cachedViews[name] = newView, newView
 	}
 
