@@ -37,6 +37,7 @@ func fromFileInfo(base *fs.FS, path string, fileInfo fs.FileInfo) File {
 		Type:    type_,
 		Name:    fileInfo.Name(),
 		path:    filepath.Join(path, fileInfo.Name()),
+		base:    base,
 		size:    uint64(fileInfo.Size()),
 		modTime: fileInfo.ModTime(),
 	}
@@ -78,7 +79,7 @@ func (f File) Path() string {
 }
 
 func (f File) ParentPath() string {
-	return filepath.Dir(f.path)
+	return filepath.Dir("/" + f.path)
 }
 
 // Custom sort for File: Directories come firs, then sorting by Name alphabetically.
