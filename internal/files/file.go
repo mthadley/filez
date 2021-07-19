@@ -71,6 +71,7 @@ func (f File) Content() template.HTML {
 	formatter := html.New(
 		html.Standalone(false),
 		html.WithLineNumbers(true),
+		html.LinkableLineNumbers(true, "l"),
 	)
 	style := styles.Friendly
 
