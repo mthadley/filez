@@ -63,20 +63,16 @@ func (f File) Content() template.HTML {
 		lexer = lexers.Fallback
 	}
 
-	formatter := html.New(
-		html.Standalone(false),
-		html.WithLineNumbers(true),
-	)
-
-	style := styles.Get("friendly")
-	if style == nil {
-		style = styles.Fallback
-	}
-
 	it, err := lexer.Tokenise(nil, string(content))
 	if err != nil {
 		return fallback
 	}
+
+	formatter := html.New(
+		html.Standalone(false),
+		html.WithLineNumbers(true),
+	)
+	style := styles.Friendly
 
 	err = formatter.Format(buf, style, it)
 	if err != nil {
