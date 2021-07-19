@@ -2,11 +2,27 @@
   <!DOCTYPE html>
   <html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Share my filez." />
+
     <title>Filez</title>
+
+    <link rel="stylesheet" href="/filez/assets/main.css">
   </head>
 
   <body>
-    {{template "content" .}}
+    <header>
+      <h1>Filez</h1>
+    </header>
+
+    <main>
+      {{template "content" .}}
+    </main>
+
+    <footer>
+      Made with ❤️ by <a href="https://github.com/mthadley/filez">mthadley</a>
+    </footer>
   </body>
   </html>
 {{end}}

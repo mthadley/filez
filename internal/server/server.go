@@ -27,11 +27,17 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	router := handlers.LoggingHandler(os.Stdout, s.router)
+	router = handlers.CompressHandler(router)
 	router.ServeHTTP(w, r)
 }
 
 func (s *Server) initRoutes() {
 	s.router = mux.NewRouter()
+
+	assets := s.router.PathPrefix("/filez").Subrouter()
+	assets.PathPrefix("/assets").
+		Handler(http.StripPrefix("/filez/", s.handleAssets())).
+		Methods("GET")
 
 	s.router.PathPrefix("/").Handler(s.handleFile()).Methods("GET")
 }
