@@ -26,8 +26,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		s.initRoutes()
 	}
 
-	router := handlers.LoggingHandler(os.Stdout, s.router)
-	router = handlers.CompressHandler(router)
+	router := handlers.CompressHandler(s.router)
+	router = handlers.LoggingHandler(os.Stdout, router)
 	router.ServeHTTP(w, r)
 }
 
