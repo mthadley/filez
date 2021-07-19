@@ -2,7 +2,6 @@ package files
 
 import (
 	"io/fs"
-	"io/ioutil"
 	"path/filepath"
 	"strings"
 	"time"
@@ -13,8 +12,8 @@ import (
 type File struct {
 	Name    string
 	Type    FileType
-	Path    string
-	base    string
+	path    string
+	base    *fs.FS
 	size    uint64
 	modTime time.Time
 }
@@ -26,7 +25,7 @@ const (
 	SomeFile
 )
 
-func fromFileInfo(base, path string, fileInfo fs.FileInfo) File {
+func fromFileInfo(base *fs.FS, path string, fileInfo fs.FileInfo) File {
 	var type_ FileType
 	if fileInfo.IsDir() {
 		type_ = Directory
@@ -37,14 +36,14 @@ func fromFileInfo(base, path string, fileInfo fs.FileInfo) File {
 	return File{
 		Type:    type_,
 		Name:    fileInfo.Name(),
-		base:    base,
-		Path:    strings.Replace(path+"/"+fileInfo.Name(), base, "", 1),
+		path:    filepath.Join(path, fileInfo.Name()),
 		size:    uint64(fileInfo.Size()),
 		modTime: fileInfo.ModTime(),
 	}
 }
+
 func (f File) Content() string {
-	content, err := ioutil.ReadFile(f.base + f.Path)
+	content, err := fs.ReadFile(*f.base, normalizePath(f.path))
 	if err != nil {
 		return "Unable to read file"
 	}
@@ -71,11 +70,15 @@ func (f File) HumanLastModified() string {
 }
 
 func (f File) IsRoot() bool {
-	return f.ParentPath() == "."
+	return f.path == "."
+}
+
+func (f File) Path() string {
+	return "/" + f.path
 }
 
 func (f File) ParentPath() string {
-	return filepath.Dir(f.Path)
+	return filepath.Dir(f.path)
 }
 
 // Custom sort for File: Directories come firs, then sorting by Name alphabetically.

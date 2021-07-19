@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 
 	"github.com/mthadley/filez/internal/server"
@@ -15,7 +16,8 @@ func main() {
 		log.Fatal("Not a valid base directory", err)
 	}
 
-	server := server.NewServer(baseDir)
+	base := os.DirFS(baseDir)
+	server := server.NewServer(base)
 
 	fmt.Println("Starting server...")
 

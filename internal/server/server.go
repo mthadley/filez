@@ -1,9 +1,9 @@
 package server
 
 import (
+	"io/fs"
 	"net/http"
 	"os"
-	"path/filepath"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -11,13 +11,13 @@ import (
 )
 
 type Server struct {
-	baseDir string
-	router  *mux.Router
+	base   fs.FS
+	router *mux.Router
 }
 
-func NewServer(dir string) *Server {
+func NewServer(base fs.FS) *Server {
 	return &Server{
-		baseDir: dir,
+		base: base,
 	}
 }
 
@@ -44,8 +44,9 @@ func (s *Server) initRoutes() {
 
 func (s *Server) handleFile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		path := filepath.Join(s.baseDir, r.URL.Path)
-		file, err := files.Info(s.baseDir, path)
+		path := r.URL.Path
+		file, err := files.Info(&s.base, path)
+
 		if err != nil {
 			s.handleFileError(err, w, r)
 			return
@@ -53,7 +54,7 @@ func (s *Server) handleFile() http.HandlerFunc {
 
 		switch file.Type {
 		case files.Directory:
-			contents, err := files.List(s.baseDir, path)
+			contents, err := files.List(&s.base, path)
 			if err != nil {
 				s.handleFileError(err, w, r)
 				return
