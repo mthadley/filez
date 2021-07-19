@@ -1,6 +1,12 @@
 package files
 
-import "io/ioutil"
+import (
+	"fmt"
+	"io/fs"
+	"io/ioutil"
+	"path/filepath"
+	"strings"
+)
 
 type File struct {
 	Name string
@@ -16,6 +22,22 @@ const (
 	SomeFile
 )
 
+func fromFileInfo(base, path string, fileInfo fs.FileInfo) File {
+	file := File{}
+
+	if fileInfo.IsDir() {
+		file.Type = Directory
+	} else {
+		file.Type = SomeFile
+	}
+
+	fmt.Println(path, base)
+	file.Name = fileInfo.Name()
+	file.base = base
+	file.Path = strings.Replace(path+"/"+file.Name, base, "", 1)
+
+	return file
+}
 func (f File) Content() string {
 	content, err := ioutil.ReadFile(f.base + f.Path)
 	if err != nil {
@@ -33,6 +55,14 @@ func (f File) EmojiIcon() (icon string) {
 		icon = "📄"
 	}
 	return
+}
+
+func (f File) IsRoot() bool {
+	return f.ParentPath() == "."
+}
+
+func (f File) ParentPath() string {
+	return filepath.Dir(f.Path)
 }
 
 // Custom sort for File: Directories come firs, then sorting by Name alphabetically.

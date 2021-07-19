@@ -60,8 +60,10 @@ func (s *Server) handleFile() http.HandlerFunc {
 			}
 
 			s.render(w, "directory", struct {
+				File  files.File
 				Files []files.File
 			}{
+				File:  file,
 				Files: contents,
 			})
 		case files.SomeFile:

@@ -1,12 +1,10 @@
 package files
 
 import (
-	"io/fs"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
-	"strings"
 )
 
 func Info(base, path string) (File, error) {
@@ -32,20 +30,4 @@ func List(base, dir string) ([]File, error) {
 	sort.Sort(SortByFileType(result))
 
 	return result, nil
-}
-
-func fromFileInfo(base, path string, fileInfo fs.FileInfo) File {
-	file := File{}
-
-	if fileInfo.IsDir() {
-		file.Type = Directory
-	} else {
-		file.Type = SomeFile
-	}
-
-	file.Name = fileInfo.Name()
-	file.base = base
-	file.Path = strings.Replace(path, base, "", 1) + "/" + file.Name
-
-	return file
 }

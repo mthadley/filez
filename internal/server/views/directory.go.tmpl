@@ -5,6 +5,12 @@
         <th>Name</th>
       </tr>
     </thead>
+      {{if not .File.IsRoot}}
+        <tr>
+          <td><a href="{{.File.ParentPath}}">..</a></td>
+        <tr>
+      {{end}}
+
       {{range .Files}}
         <tr>
           <td>
