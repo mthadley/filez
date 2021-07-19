@@ -69,3 +69,13 @@ func (f File) Content() string {
 
 	return string(content)
 }
+
+func (f File) EmojiIcon() (icon string) {
+	switch f.Type {
+	case Directory:
+		icon = "📂"
+	case SomeFile:
+		icon = "📄"
+	}
+	return
+}
