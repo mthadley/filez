@@ -2,7 +2,6 @@ package files
 
 import (
 	"bytes"
-	"fmt"
 	"html/template"
 	"io/fs"
 	"path/filepath"
@@ -120,7 +119,6 @@ type ParentPath struct {
 }
 
 func (f File) ParentPaths() (paths []ParentPath) {
-	fmt.Println(f.Path())
 	if f.IsRoot() {
 		return
 	}
@@ -128,7 +126,6 @@ func (f File) ParentPaths() (paths []ParentPath) {
 	path := filepath.Dir(f.Path())
 
 	for path != "/" {
-		fmt.Println(path)
 		paths = append([]ParentPath{ParentPath{filepath.Base(path), path}}, paths...)
 		path = filepath.Dir(path)
 	}
