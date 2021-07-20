@@ -28,3 +28,19 @@
   </body>
   </html>
 {{end}}
+
+{{define "breadcrumbs"}}
+  <nav>
+    {{range .ParentPaths}}
+      <span class="file-sep">/<span>
+
+      <a href="{{.Path}}">{{.Name}}</a>
+    {{end}}
+
+    /
+
+    {{if not .IsRoot}}
+      {{.Name}}
+    {{end}}
+  </nav>
+{{end}}

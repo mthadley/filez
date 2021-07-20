@@ -2,6 +2,7 @@ package files
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 	"io/fs"
 	"path/filepath"
@@ -18,7 +19,7 @@ type File struct {
 	Name    string
 	Type    FileType
 	path    string
-	base    *fs.FS
+	base    fs.FS
 	size    uint64
 	modTime time.Time
 }
@@ -30,7 +31,7 @@ const (
 	SomeFile
 )
 
-func fromFileInfo(base *fs.FS, path string, fileInfo fs.FileInfo) File {
+func FromFileInfo(base fs.FS, path string, fileInfo fs.FileInfo) File {
 	var type_ FileType
 	if fileInfo.IsDir() {
 		type_ = Directory
@@ -49,7 +50,7 @@ func fromFileInfo(base *fs.FS, path string, fileInfo fs.FileInfo) File {
 }
 
 func (f File) Content() template.HTML {
-	content, err := fs.ReadFile(*f.base, normalizePath(f.path))
+	content, err := fs.ReadFile(f.base, normalizePath(f.path))
 	if err != nil {
 		return "Unable to read file"
 	}
@@ -111,6 +112,28 @@ func (f File) Path() string {
 
 func (f File) ParentPath() string {
 	return filepath.Dir(f.Path())
+}
+
+type ParentPath struct {
+	Name string
+	Path string
+}
+
+func (f File) ParentPaths() (paths []ParentPath) {
+	fmt.Println(f.Path())
+	if f.IsRoot() {
+		return
+	}
+
+	path := filepath.Dir(f.Path())
+
+	for path != "/" {
+		fmt.Println(path)
+		paths = append([]ParentPath{ParentPath{filepath.Base(path), path}}, paths...)
+		path = filepath.Dir(path)
+	}
+
+	return
 }
 
 // Custom sort for File: Directories come firs, then sorting by Name alphabetically.

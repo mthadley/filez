@@ -1,7 +1,7 @@
 {{define "content"}}
-  <a href="{{.ParentPath}}">..</a>
+  {{template "breadcrumbs" .}}
 
-  <h2>{{.Path}}</h2>
+  <h2>{{.Name}}</h2>
   <small>
     Size: <b>{{.HumanSize}}</b>,
     Last Modified: <b>{{.HumanLastModified}}</b>

@@ -45,7 +45,7 @@ func (s *Server) initRoutes() {
 func (s *Server) handleFile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
-		file, err := files.Info(&s.base, path)
+		file, err := files.Info(s.base, path)
 
 		if err != nil {
 			s.handleFileError(err, w, r)
@@ -54,7 +54,7 @@ func (s *Server) handleFile() http.HandlerFunc {
 
 		switch file.Type {
 		case files.Directory:
-			contents, err := files.List(&s.base, path)
+			contents, err := files.List(s.base, path)
 			if err != nil {
 				s.handleFileError(err, w, r)
 				return

@@ -20,18 +20,14 @@ footer {
   padding: 20px 0;
 }
 
+nav {
+  margin-bottom: 20px;
+}
+
 pre {
   background-color: var(--lightBg);
   overflow-x: auto;
   padding: 10px;
-}
-
-.table-container {
-  overflow-x: auto;
-}
-
-.table-container > table {
-  white-space: nowrap;
 }
 
 td {
@@ -44,4 +40,16 @@ td:last-child {
 
 th {
   text-align: left;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.table-container > table {
+  white-space: nowrap;
+}
+
+.file-sep {
+  margin-right: 1px;
 }

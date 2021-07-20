@@ -6,21 +6,21 @@ import (
 	"sort"
 )
 
-func Info(base *fs.FS, path string) (File, error) {
+func Info(base fs.FS, path string) (File, error) {
 	path = normalizePath(path)
 
-	fileInfo, err := fs.Stat(*base, path)
+	fileInfo, err := fs.Stat(base, path)
 	if err != nil {
 		return File{}, err
 	}
 
-	return fromFileInfo(base, filepath.Dir(path), fileInfo), nil
+	return FromFileInfo(base, filepath.Dir(path), fileInfo), nil
 }
 
-func List(base *fs.FS, dir string) ([]File, error) {
+func List(base fs.FS, dir string) ([]File, error) {
 	dir = normalizePath(dir)
 
-	entries, err := fs.ReadDir(*base, dir)
+	entries, err := fs.ReadDir(base, dir)
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +32,7 @@ func List(base *fs.FS, dir string) ([]File, error) {
 			return nil, err
 		}
 
-		result[i] = fromFileInfo(base, dir, fileInfo)
+		result[i] = FromFileInfo(base, dir, fileInfo)
 	}
 
 	sort.Sort(SortByFileType(result))
