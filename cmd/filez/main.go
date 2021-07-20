@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -11,7 +12,18 @@ import (
 )
 
 func main() {
-	baseDir, err := filepath.Abs(".")
+	var basePath string
+
+	flag.Parse()
+	args := flag.Args()
+
+	if len(args) > 0 {
+		basePath = args[0]
+	} else {
+		basePath = "."
+	}
+
+	baseDir, err := filepath.Abs(basePath)
 	if err != nil {
 		log.Fatal("Not a valid base directory", err)
 	}
