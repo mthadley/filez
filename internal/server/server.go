@@ -1,6 +1,7 @@
 package server
 
 import (
+	"errors"
 	"io/fs"
 	"net/http"
 	"os"
@@ -48,7 +49,7 @@ func (s *Server) handleFile() http.HandlerFunc {
 		file, err := files.Info(s.base, path)
 
 		if err != nil {
-			s.handleFileError(err, w, r)
+			s.handleFileError(err, w)
 			return
 		}
 
@@ -56,7 +57,7 @@ func (s *Server) handleFile() http.HandlerFunc {
 		case files.Directory:
 			contents, err := files.List(s.base, path)
 			if err != nil {
-				s.handleFileError(err, w, r)
+				s.handleFileError(err, w)
 				return
 			}
 
@@ -73,7 +74,24 @@ func (s *Server) handleFile() http.HandlerFunc {
 	}
 }
 
-func (s *Server) handleFileError(err error, w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotFound)
-	s.render(w, "not_found", r.URL.Path)
+func (s *Server) handleFileError(err error, w http.ResponseWriter) {
+	status := http.StatusInternalServerError
+
+	switch {
+	case errors.Is(err, fs.ErrNotExist):
+		err = errors.New("File not found.")
+		status = http.StatusNotFound
+	case errors.Is(err, fs.ErrPermission):
+		err = errors.New("No permission to view this file.")
+		status = http.StatusNotFound
+	default:
+		err = errors.New("Unable to view file or page.")
+	}
+
+	s.handleError(w, err, status)
+}
+
+func (s *Server) handleError(w http.ResponseWriter, err error, status int) {
+	w.WriteHeader(status)
+	s.render(w, "error", err)
 }
