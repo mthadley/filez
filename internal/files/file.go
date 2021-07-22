@@ -168,7 +168,7 @@ func (f File) Path() string {
 }
 
 func (f File) RawPath() string {
-	return "/filez/raw" + f.path
+	return "/filez/raw" + f.Path()
 }
 
 func (f File) ParentPath() string {
