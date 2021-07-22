@@ -2,7 +2,9 @@ package files
 
 import (
 	"bytes"
+	"errors"
 	"html/template"
+	"io"
 	"io/fs"
 	"mime"
 	"path/filepath"
@@ -22,7 +24,7 @@ type File struct {
 	path    string
 	base    fs.FS
 	size    uint64
-	modTime time.Time
+	ModTime time.Time
 }
 
 type FileType = int
@@ -53,10 +55,23 @@ func FromFileInfo(base fs.FS, path string, fileInfo fs.FileInfo) File {
 		Type:    type_,
 		Name:    name,
 		Mime:    mime.TypeByExtension(filepath.Ext(name)),
+		ModTime: fileInfo.ModTime(),
 		path:    filepath.Join(path, name),
 		base:    base,
 		size:    uint64(fileInfo.Size()),
-		modTime: fileInfo.ModTime(),
+	}
+}
+
+func (f File) OpenSteam() (io.ReadSeekCloser, error) {
+	file, err := f.base.Open(normalizePath(f.path))
+	if err != nil {
+		return nil, err
+	}
+
+	if seeker, ok := file.(io.ReadSeekCloser); ok {
+		return seeker, nil
+	} else {
+		return nil, errors.New("Cannot open this file for serving.")
 	}
 }
 
@@ -133,7 +148,7 @@ func (f File) HumanSize() string {
 }
 
 func (f File) HumanLastModified() string {
-	return humanize.Time(f.modTime)
+	return humanize.Time(f.ModTime)
 }
 
 func (f File) IsRoot() bool {
@@ -142,6 +157,10 @@ func (f File) IsRoot() bool {
 
 func (f File) Path() string {
 	return "/" + f.path
+}
+
+func (f File) RawPath() string {
+	return "/filez/raw" + f.path
 }
 
 func (f File) ParentPath() string {

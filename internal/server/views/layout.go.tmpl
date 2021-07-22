@@ -33,8 +33,6 @@
 {{define "breadcrumbs"}}
   <nav>
     {{range .ParentPaths}}
-      <span class="file-sep">/<span>
-
       <a href="{{.Path}}">{{.Name}}</a>
     {{end}}
 

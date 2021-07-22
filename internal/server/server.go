@@ -33,9 +33,12 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (s *Server) initRoutes() {
 	s.router = mux.NewRouter()
 
-	assets := s.router.PathPrefix("/filez").Subrouter()
-	assets.PathPrefix("/assets").
+	filez := s.router.PathPrefix("/filez").Subrouter()
+	filez.PathPrefix("/assets").
 		Handler(http.StripPrefix("/filez/", s.handleAssets())).
+		Methods("GET")
+	filez.PathPrefix("/raw").
+		Handler(http.StripPrefix("/filez/raw", s.handleFileRaw())).
 		Methods("GET")
 
 	s.router.PathPrefix("/").Handler(s.handleFile()).Methods("GET")
@@ -80,6 +83,24 @@ func (s *Server) handleFile() http.HandlerFunc {
 				http.StatusForbidden,
 			)
 		}
+	}
+}
+
+func (s *Server) handleFileRaw() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		file, err := files.Info(s.base, r.URL.Path)
+		if err != nil {
+			handleFileError(err, w)
+			return
+		}
+		steam, err := file.OpenSteam()
+		if err != nil {
+			handleFileError(err, w)
+			return
+		}
+		defer steam.Close()
+
+		http.ServeContent(w, r, file.Name, file.ModTime, steam)
 	}
 }
 

@@ -50,6 +50,12 @@ th {
   white-space: nowrap;
 }
 
-.file-sep {
-  margin-right: 1px;
+.file--details {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.file--actions {
+  margin-bottom: 0;
 }

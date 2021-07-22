@@ -2,10 +2,17 @@
   {{template "breadcrumbs" .}}
 
   <h2>{{.EmojiIcon}} {{.Name}}</h2>
-  <small>
-    Size: <b>{{.HumanSize}}</b>,
-    Last Modified: <b>{{.HumanLastModified}}</b>
-  </small>
+
+  <div class="file--details">
+    <small>
+      Size: <b>{{.HumanSize}}</b>,
+      Last Modified: <b>{{.HumanLastModified}}</b>
+    </small>
+
+    <nav class="file--actions">
+      <a href="{{.RawPath}}">Raw</a>
+    </nav>
+  </div>
 
   {{.Content}}
 {{end}}
