@@ -28,14 +28,21 @@ type FileType = int
 const (
 	Directory = iota
 	SomeFile
+	SpecialFile
+	Symlink
 )
 
 func FromFileInfo(base fs.FS, path string, fileInfo fs.FileInfo) File {
 	var type_ FileType
-	if fileInfo.IsDir() {
+	switch {
+	case fileInfo.IsDir():
 		type_ = Directory
-	} else {
+	case fileInfo.Mode()&fs.ModeSymlink != 0:
+		type_ = Symlink
+	case fileInfo.Mode().IsRegular():
 		type_ = SomeFile
+	default:
+		type_ = SpecialFile
 	}
 
 	return File{
@@ -89,6 +96,10 @@ func (f File) EmojiIcon() (icon string) {
 		icon = "📂"
 	case SomeFile:
 		icon = "📄"
+	case Symlink:
+		icon = "🔗"
+	case SpecialFile:
+		icon = "⚙️"
 	}
 	return
 }

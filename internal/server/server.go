@@ -71,8 +71,14 @@ func (s *Server) handleFile() http.HandlerFunc {
 				File:  file,
 				Files: contents,
 			})
-		case files.SomeFile:
+		case files.SomeFile, files.Symlink:
 			render(w, "file", file)
+		case files.SpecialFile:
+			handleError(
+				w,
+				errors.New("Cannot open this kind of file."),
+				http.StatusForbidden,
+			)
 		}
 	}
 }
