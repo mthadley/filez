@@ -30,6 +30,10 @@ pre {
   padding: 10px;
 }
 
+img, video {
+  max-width: 100%;
+}
+
 td {
   padding-right: 15px;
 }
@@ -54,6 +58,7 @@ th {
   align-items: center;
   display: flex;
   justify-content: space-between;
+  margin-bottom: 15px;
 }
 
 .file--actions {

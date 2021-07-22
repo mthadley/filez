@@ -14,5 +14,13 @@
     </nav>
   </div>
 
-  {{.Content}}
+  {{if .IsImage}}
+    <img src="{{.RawPath}}" />
+  {{else if .IsVideo}}
+    <video controls>
+      <source src="{{.RawPath}}" type="{{.Mime}}">
+    </video>
+  {{else}}
+    {{.Content}}
+  {{end}}
 {{end}}

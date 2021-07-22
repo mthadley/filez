@@ -115,7 +115,7 @@ func (f File) EmojiIcon() (icon string) {
 	case Directory:
 		icon = "📂"
 	case SomeFile:
-		icon = emojiFromMime(f.Mime)
+		icon = f.emojiFromMime()
 	case Symlink:
 		icon = "🔗"
 	case SpecialFile:
@@ -124,23 +124,31 @@ func (f File) EmojiIcon() (icon string) {
 	return
 }
 
-func emojiFromMime(m string) (icon string) {
-	switch m {
+func (f File) emojiFromMime() (icon string) {
+	switch f.Mime {
 	case "application/x-ruby":
 		icon = "💎"
 	case "text/x-python":
 		icon = "🐍"
 	default:
 		switch {
-		case strings.HasPrefix(m, "image/"):
+		case f.IsImage():
 			icon = "🖼️"
-		case strings.HasPrefix(m, "video/"):
+		case f.IsVideo():
 			icon = "🎞️"
 		default:
 			icon = "📄"
 		}
 	}
 	return
+}
+
+func (f File) IsImage() bool {
+	return strings.HasPrefix(f.Mime, "image/")
+}
+
+func (f File) IsVideo() bool {
+	return strings.HasPrefix(f.Mime, "video/")
 }
 
 func (f File) HumanSize() string {
