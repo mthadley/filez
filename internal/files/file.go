@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"html/template"
 	"io/fs"
+	"mime"
 	"path/filepath"
 	"strings"
 	"time"
@@ -17,6 +18,7 @@ import (
 type File struct {
 	Name    string
 	Type    FileType
+	Mime    string
 	path    string
 	base    fs.FS
 	size    uint64
@@ -45,10 +47,13 @@ func FromFileInfo(base fs.FS, path string, fileInfo fs.FileInfo) File {
 		type_ = SpecialFile
 	}
 
+	name := fileInfo.Name()
+
 	return File{
 		Type:    type_,
-		Name:    fileInfo.Name(),
-		path:    filepath.Join(path, fileInfo.Name()),
+		Name:    name,
+		Mime:    mime.TypeByExtension(filepath.Ext(name)),
+		path:    filepath.Join(path, name),
 		base:    base,
 		size:    uint64(fileInfo.Size()),
 		modTime: fileInfo.ModTime(),
@@ -95,11 +100,30 @@ func (f File) EmojiIcon() (icon string) {
 	case Directory:
 		icon = "📂"
 	case SomeFile:
-		icon = "📄"
+		icon = emojiFromMime(f.Mime)
 	case Symlink:
 		icon = "🔗"
 	case SpecialFile:
 		icon = "⚙️"
+	}
+	return
+}
+
+func emojiFromMime(m string) (icon string) {
+	switch m {
+	case "application/x-ruby":
+		icon = "💎"
+	case "text/x-python":
+		icon = "🐍"
+	default:
+		switch {
+		case strings.HasPrefix(m, "image/"):
+			icon = "🖼️"
+		case strings.HasPrefix(m, "video/"):
+			icon = "🎞️"
+		default:
+			icon = "📄"
+		}
 	}
 	return
 }
