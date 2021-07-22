@@ -27,11 +27,6 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		s.initRoutes()
 	}
 
-	s.router.Use(
-		handlers.CompressHandler,
-		func(h http.Handler) http.Handler { return handlers.LoggingHandler(os.Stdout, h) },
-	)
-
 	s.router.ServeHTTP(w, r)
 }
 
@@ -44,6 +39,11 @@ func (s *Server) initRoutes() {
 		Methods("GET")
 
 	s.router.PathPrefix("/").Handler(s.handleFile()).Methods("GET")
+
+	s.router.Use(
+		handlers.CompressHandler,
+		func(h http.Handler) http.Handler { return handlers.LoggingHandler(os.Stdout, h) },
+	)
 }
 
 func (s *Server) handleFile() http.HandlerFunc {
