@@ -33,7 +33,7 @@
 {{define "breadcrumbs"}}
   <nav>
     {{range .ParentPaths}}
-      <a href="{{.Path}}">{{.Name}}</a>
+      / <a href="{{.Path}}">{{.Name}}</a>
     {{end}}
 
     /
