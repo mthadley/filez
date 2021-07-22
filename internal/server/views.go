@@ -14,7 +14,7 @@ const (
 
 var cachedViews = map[string]*template.Template{}
 
-func (s *Server) render(w http.ResponseWriter, name string, data interface{}) {
+func render(w http.ResponseWriter, name string, data interface{}) {
 	views, found := cachedViews[name]
 	if !found {
 		newView, err := template.ParseFS(viewFS, layoutViewFile, "views/"+name+".go.tmpl")

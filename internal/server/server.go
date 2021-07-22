@@ -49,7 +49,7 @@ func (s *Server) handleFile() http.HandlerFunc {
 		file, err := files.Info(s.base, path)
 
 		if err != nil {
-			s.handleFileError(err, w)
+			handleFileError(err, w)
 			return
 		}
 
@@ -57,11 +57,11 @@ func (s *Server) handleFile() http.HandlerFunc {
 		case files.Directory:
 			contents, err := files.List(s.base, path)
 			if err != nil {
-				s.handleFileError(err, w)
+				handleFileError(err, w)
 				return
 			}
 
-			s.render(w, "directory", struct {
+			render(w, "directory", struct {
 				File  files.File
 				Files []files.File
 			}{
@@ -69,12 +69,12 @@ func (s *Server) handleFile() http.HandlerFunc {
 				Files: contents,
 			})
 		case files.SomeFile:
-			s.render(w, "file", file)
+			render(w, "file", file)
 		}
 	}
 }
 
-func (s *Server) handleFileError(err error, w http.ResponseWriter) {
+func handleFileError(err error, w http.ResponseWriter) {
 	status := http.StatusInternalServerError
 
 	switch {
@@ -88,10 +88,10 @@ func (s *Server) handleFileError(err error, w http.ResponseWriter) {
 		err = errors.New("Unable to view file or page.")
 	}
 
-	s.handleError(w, err, status)
+	handleError(w, err, status)
 }
 
-func (s *Server) handleError(w http.ResponseWriter, err error, status int) {
+func handleError(w http.ResponseWriter, err error, status int) {
 	w.WriteHeader(status)
-	s.render(w, "error", err)
+	render(w, "error", err)
 }
