@@ -128,6 +128,8 @@ func (f File) emojiFromMime() (icon string) {
 	switch f.Mime {
 	case "application/x-ruby":
 		icon = "💎"
+	case "application/pdf":
+		icon = "📜"
 	case "text/x-python":
 		icon = "🐍"
 	default:
@@ -149,6 +151,10 @@ func (f File) IsImage() bool {
 
 func (f File) IsVideo() bool {
 	return strings.HasPrefix(f.Mime, "video/")
+}
+
+func (f File) IsPdf() bool {
+	return f.Mime == "application/pdf"
 }
 
 func (f File) HumanSize() string {

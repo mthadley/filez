@@ -20,6 +20,8 @@
     <video controls>
       <source src="{{.RawPath}}" type="{{.Mime}}">
     </video>
+  {{else if .IsPdf}}
+    <embed type="{{.Mime}}" title="PDF document" src="{{.RawPath}}" />
   {{else}}
     {{.Content}}
   {{end}}
