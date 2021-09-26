@@ -35,7 +35,7 @@ func (s *Server) initRoutes() {
 
 	filez := s.router.PathPrefix("/filez").Subrouter()
 	filez.PathPrefix("/assets").
-		Handler(http.StripPrefix("/filez/", s.handleAssets())).
+		Handler(http.StripPrefix(assetPathPrefix+"/", s.handleAssets())).
 		Methods("GET")
 	filez.PathPrefix("/raw").
 		Handler(http.StripPrefix("/filez/raw", s.handleFileRaw())).
