@@ -11,16 +11,16 @@ import (
 	"sync"
 )
 
-func (s *Server) handleAssets() http.Handler {
+func (s *Server) handleAssets() http.HandlerFunc {
 	fileServer := http.FileServer(http.FS(HashedAssetsFS(func(p string) (fs.File, error) {
 		return s.assets.openAsset(p)
 	})))
 
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Cache-Control", "public, max-age=604800, immutable")
 
 		fileServer.ServeHTTP(w, r)
-	})
+	}
 }
 
 //go:embed assets
