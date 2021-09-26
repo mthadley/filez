@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"path"
 	"strings"
+	"sync"
 )
 
 func (s *Server) handleAssets() http.Handler {
@@ -33,6 +34,7 @@ const (
 type assetFingerprinter struct {
 	assetToFingerprinted map[string]string
 	fingerprintedToAsset map[string]string
+	lock                 sync.Mutex
 }
 
 func newAssetFingerprinter() *assetFingerprinter {
@@ -45,24 +47,34 @@ func newAssetFingerprinter() *assetFingerprinter {
 func (fp *assetFingerprinter) assetPath(p string) (string, error) {
 	fingerprintedPath, found := fp.assetToFingerprinted[p]
 	if !found {
-		content, err := assetsFS.ReadFile(assetFsPrefix + p)
+		newFingerprint, err := fp.addAsset(p)
 		if err != nil {
 			return "", err
 		}
 
-		newFingerprint := addFingerprint(p, fmt.Sprint(crc32.ChecksumIEEE(content)))
-
-		fingerprintedPath, fp.assetToFingerprinted[p] = newFingerprint, newFingerprint
-		fp.fingerprintedToAsset[fingerprintedPath] = p
+		fingerprintedPath = newFingerprint
 	}
 
 	return path.Join(assetPathPrefix, fingerprintedPath), nil
 }
 
-func addFingerprint(p string, fingerprint string) string {
-	ext := path.Ext(p)
+func (fp *assetFingerprinter) addAsset(p string) (string, error) {
+	fp.lock.Lock()
+	defer fp.lock.Unlock()
 
-	return strings.TrimSuffix(p, ext) + "-" + fingerprint + ext
+	content, err := assetsFS.ReadFile(assetFsPrefix + p)
+	if err != nil {
+		return "", err
+	}
+
+	ext := path.Ext(p)
+	fingerprint := fmt.Sprint(crc32.ChecksumIEEE(content))
+	fingerprintedPath := strings.TrimSuffix(p, ext) + "-" + fingerprint + ext
+
+	fp.assetToFingerprinted[p] = fingerprintedPath
+	fp.fingerprintedToAsset[fingerprintedPath] = p
+
+	return fingerprintedPath, nil
 }
 
 type HashedAssetsFS func(string) (fs.File, error)
