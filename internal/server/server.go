@@ -14,11 +14,13 @@ import (
 type Server struct {
 	base   fs.FS
 	router *mux.Router
+	assets *assetFingerprinter
 }
 
 func NewServer(base fs.FS) *Server {
 	return &Server{
-		base: base,
+		base:   base,
+		assets: newAssetFingerprinter(),
 	}
 }
 
@@ -55,7 +57,7 @@ func (s *Server) handleFile() http.HandlerFunc {
 		file, err := files.Info(s.base, path)
 
 		if err != nil {
-			handleFileError(err, w)
+			s.handleFileError(err, w)
 			return
 		}
 
@@ -63,11 +65,11 @@ func (s *Server) handleFile() http.HandlerFunc {
 		case files.Directory:
 			contents, err := files.List(s.base, path)
 			if err != nil {
-				handleFileError(err, w)
+				s.handleFileError(err, w)
 				return
 			}
 
-			render(w, "directory", struct {
+			s.render(w, "directory", struct {
 				File  files.File
 				Files []files.File
 			}{
@@ -75,9 +77,9 @@ func (s *Server) handleFile() http.HandlerFunc {
 				Files: contents,
 			})
 		case files.SomeFile, files.Symlink:
-			render(w, "file", file)
+			s.render(w, "file", file)
 		case files.SpecialFile:
-			handleError(
+			s.handleError(
 				w,
 				errors.New("Cannot open this kind of file."),
 				http.StatusForbidden,
@@ -90,12 +92,12 @@ func (s *Server) handleFileRaw() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		file, err := files.Info(s.base, r.URL.Path)
 		if err != nil {
-			handleFileError(err, w)
+			s.handleFileError(err, w)
 			return
 		}
 		steam, err := file.OpenSteam()
 		if err != nil {
-			handleFileError(err, w)
+			s.handleFileError(err, w)
 			return
 		}
 		defer steam.Close()
@@ -104,7 +106,7 @@ func (s *Server) handleFileRaw() http.HandlerFunc {
 	}
 }
 
-func handleFileError(err error, w http.ResponseWriter) {
+func (s *Server) handleFileError(err error, w http.ResponseWriter) {
 	status := http.StatusInternalServerError
 
 	switch {
@@ -118,10 +120,10 @@ func handleFileError(err error, w http.ResponseWriter) {
 		err = errors.New("Unable to view file or page.")
 	}
 
-	handleError(w, err, status)
+	s.handleError(w, err, status)
 }
 
-func handleError(w http.ResponseWriter, err error, status int) {
+func (s *Server) handleError(w http.ResponseWriter, err error, status int) {
 	w.WriteHeader(status)
-	render(w, "error", err)
+	s.render(w, "error", err)
 }

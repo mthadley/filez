@@ -14,13 +14,13 @@ const (
 
 var cachedViews = map[string]*template.Template{}
 
-func render(w http.ResponseWriter, name string, data interface{}) {
+func (s *Server) render(w http.ResponseWriter, name string, data interface{}) {
 	views, found := cachedViews[name]
 	if !found {
 		newView := template.New(name)
 
 		newView.Funcs(map[string]interface{}{
-			"assetPath": assetPath,
+			"assetPath": func(p string) (string, error) { return s.assets.assetPath(p) },
 		})
 
 		_, err := newView.ParseFS(viewFS, layoutViewFile, "views/"+name+".go.tmpl")

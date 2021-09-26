@@ -11,17 +11,15 @@ import (
 )
 
 func (s *Server) handleAssets() http.Handler {
-	fileServer := http.FileServer(http.FS(HashedAssetsFS(handleAsset)))
+	fileServer := http.FileServer(http.FS(HashedAssetsFS(func(p string) (fs.File, error) {
+		return assetsFS.Open(assetFsPrefix + s.assets.fingerprintedToAsset[p])
+	})))
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Cache-Control", "public, max-age=604800, immutable")
 
 		fileServer.ServeHTTP(w, r)
 	})
-}
-
-func handleAsset(fingerprinted string) (fs.File, error) {
-	return assetsFS.Open(assetFsPrefix + fingerprintedToAsset[fingerprinted])
 }
 
 //go:embed assets
@@ -32,11 +30,20 @@ const (
 	assetFsPrefix   = "assets/"
 )
 
-var assetToFingerprinted = map[string]string{}
-var fingerprintedToAsset = map[string]string{}
+type assetFingerprinter struct {
+	assetToFingerprinted map[string]string
+	fingerprintedToAsset map[string]string
+}
 
-func assetPath(p string) (string, error) {
-	fingerprintedPath, found := assetToFingerprinted[p]
+func newAssetFingerprinter() *assetFingerprinter {
+	return &assetFingerprinter{
+		assetToFingerprinted: map[string]string{},
+		fingerprintedToAsset: map[string]string{},
+	}
+}
+
+func (fp *assetFingerprinter) assetPath(p string) (string, error) {
+	fingerprintedPath, found := fp.assetToFingerprinted[p]
 	if !found {
 		content, err := assetsFS.ReadFile(assetFsPrefix + p)
 		if err != nil {
@@ -45,8 +52,8 @@ func assetPath(p string) (string, error) {
 
 		newFingerprint := addFingerprint(p, fmt.Sprint(crc32.ChecksumIEEE(content)))
 
-		fingerprintedPath, assetToFingerprinted[p] = newFingerprint, newFingerprint
-		fingerprintedToAsset[fingerprintedPath] = p
+		fingerprintedPath, fp.assetToFingerprinted[p] = newFingerprint, newFingerprint
+		fp.fingerprintedToAsset[fingerprintedPath] = p
 	}
 
 	return path.Join(assetPathPrefix, fingerprintedPath), nil
