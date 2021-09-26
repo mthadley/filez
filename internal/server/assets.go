@@ -13,7 +13,7 @@ import (
 
 func (s *Server) handleAssets() http.Handler {
 	fileServer := http.FileServer(http.FS(HashedAssetsFS(func(p string) (fs.File, error) {
-		return assetsFS.Open(assetFsPrefix + s.assets.fingerprintedToAsset[p])
+		return s.assets.openAsset(p)
 	})))
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -56,6 +56,10 @@ func (fp *assetFingerprinter) assetPath(p string) (string, error) {
 	}
 
 	return path.Join(assetPathPrefix, fingerprintedPath), nil
+}
+
+func (fp *assetFingerprinter) openAsset(p string) (fs.File, error) {
+	return assetsFS.Open(assetFsPrefix + fp.fingerprintedToAsset[p])
 }
 
 func (fp *assetFingerprinter) addAsset(p string) (string, error) {
