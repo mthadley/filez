@@ -11,12 +11,17 @@ import (
 )
 
 func (s *Server) handleAssets() http.Handler {
-	return http.FileServer(http.FS(HashedAssetsHandler(handleAsset)))
+	fileServer := http.FileServer(http.FS(HashedAssetsFS(handleAsset)))
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Cache-Control", "public, max-age=604800, immutable")
+
+		fileServer.ServeHTTP(w, r)
+	})
 }
 
 func handleAsset(fingerprinted string) (fs.File, error) {
 	return assetsFS.Open(assetFsPrefix + fingerprintedToAsset[fingerprinted])
-	// TODO: cache headers
 }
 
 //go:embed assets
@@ -53,8 +58,8 @@ func addFingerprint(p string, fingerprint string) string {
 	return strings.TrimSuffix(p, ext) + "-" + fingerprint + ext
 }
 
-type HashedAssetsHandler func(string) (fs.File, error)
+type HashedAssetsFS func(string) (fs.File, error)
 
-func (f HashedAssetsHandler) Open(name string) (fs.File, error) {
+func (f HashedAssetsFS) Open(name string) (fs.File, error) {
 	return f(name)
 }
