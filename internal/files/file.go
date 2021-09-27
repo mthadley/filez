@@ -27,7 +27,7 @@ type File struct {
 	ModTime time.Time
 }
 
-type FileType = int
+type FileType int
 
 const (
 	Directory = iota
