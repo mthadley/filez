@@ -19,6 +19,7 @@ main {
 
 footer {
   padding: 20px 0;
+  text-align: center;
 }
 
 nav {
@@ -40,6 +41,10 @@ embed {
   min-height: 80vh;
 }
 
+table {
+  width: 100%;
+}
+
 td {
   padding-right: 1rem;
 }
@@ -54,6 +59,7 @@ th {
 
 .table-container {
   overflow-x: auto;
+  margin-bottom: 1.5rem;
 }
 
 .table-container > table {
