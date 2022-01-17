@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/mthadley/filez/internal/server"
 )
@@ -30,11 +31,26 @@ func main() {
 
 	base := os.DirFS(baseDir)
 	server := server.NewServer(base)
+	port := getPort()
 
-	fmt.Printf("Serving folder %s at localhost:8080...\n\n", baseDir)
+	fmt.Printf("Serving folder %s at localhost:%d...\n\n", baseDir, port)
 
-	err = http.ListenAndServe(":8080", server)
+	err = http.ListenAndServe(":"+strconv.Itoa(port), server)
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func getPort() int {
+	port := 8080
+
+	rawEnvPort, envPortPresent := os.LookupEnv("PORT")
+	if envPortPresent {
+		envPort, err := strconv.Atoi(rawEnvPort)
+		if err == nil {
+			port = envPort
+		}
+	}
+
+	return *flag.Int("p", port, "The port to listen on.")
 }
