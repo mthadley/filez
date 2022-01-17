@@ -201,7 +201,7 @@ func (f File) ParentPaths() (paths []ParentPath) {
 	return
 }
 
-// Custom sort for File: Directories come firs, then sorting by Name alphabetically.
+// Custom sort for File: Directories come first, then sorting by Name alphabetically.
 type SortByFileType []File
 
 func (files SortByFileType) Len() int  { return len(files) }
