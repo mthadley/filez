@@ -6,10 +6,11 @@ body {
   display: flex;
   flex-direction: column;
   font-family: monospace;
+  font-size: 14px;
   margin: 0 auto;
   max-width: 800px;
   min-height: 100vh;
-  padding: 0 10px;
+  padding: 0 1rem;
 }
 
 main {
@@ -21,13 +22,13 @@ footer {
 }
 
 nav {
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
 }
 
 pre {
   background-color: var(--lightBg);
   overflow-x: auto;
-  padding: 10px;
+  padding: 0.75rem;
 }
 
 img, video {
@@ -40,7 +41,7 @@ embed {
 }
 
 td {
-  padding-right: 15px;
+  padding-right: 1rem;
 }
 
 td:last-child {
@@ -63,7 +64,7 @@ th {
   align-items: center;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
 }
 
 .file--actions {
