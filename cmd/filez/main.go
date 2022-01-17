@@ -13,29 +13,16 @@ import (
 )
 
 func main() {
-	var basePath string
-
-	flag.Parse()
-	args := flag.Args()
-
-	if len(args) > 0 {
-		basePath = args[0]
-	} else {
-		basePath = "."
-	}
-
-	baseDir, err := filepath.Abs(basePath)
-	if err != nil {
-		log.Fatal("Not a valid base directory", err)
-	}
-
+	baseDir := getBaseDir()
 	base := os.DirFS(baseDir)
-	server := server.NewServer(base)
+
 	port := getPort()
 
 	fmt.Printf("Serving folder %s at localhost:%d...\n\n", baseDir, port)
 
-	err = http.ListenAndServe(":"+strconv.Itoa(port), server)
+	server := server.NewServer(base)
+
+	err := http.ListenAndServe(":"+strconv.Itoa(port), server)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -53,4 +40,24 @@ func getPort() int {
 	}
 
 	return *flag.Int("p", port, "The port to listen on.")
+}
+
+func getBaseDir() string {
+	var basePath string
+
+	flag.Parse()
+	args := flag.Args()
+
+	if len(args) > 0 {
+		basePath = args[0]
+	} else {
+		basePath = "."
+	}
+
+	baseDir, err := filepath.Abs(basePath)
+	if err != nil {
+		log.Fatal("Not a valid base directory", err)
+	}
+
+	return baseDir
 }
