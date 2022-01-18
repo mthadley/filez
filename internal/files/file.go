@@ -62,7 +62,7 @@ func FromFileInfo(base fs.FS, path string, fileInfo fs.FileInfo) File {
 	}
 }
 
-func (f File) OpenSteam() (io.ReadSeekCloser, error) {
+func (f File) OpenStream() (io.ReadSeekCloser, error) {
 	file, err := f.base.Open(normalizePath(f.path))
 	if err != nil {
 		return nil, err

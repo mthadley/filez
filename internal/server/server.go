@@ -95,14 +95,14 @@ func (s *Server) handleFileRaw() http.HandlerFunc {
 			s.handleFileError(err, w)
 			return
 		}
-		steam, err := file.OpenSteam()
+		stream, err := file.OpenStream()
 		if err != nil {
 			s.handleFileError(err, w)
 			return
 		}
-		defer steam.Close()
+		defer stream.Close()
 
-		http.ServeContent(w, r, file.Name, file.ModTime, steam)
+		http.ServeContent(w, r, file.Name, file.ModTime, stream)
 	}
 }
 
