@@ -1,8 +1,35 @@
 :root {
-  --lightBg: #EEE;
+  --bg: #EEE;
+  --fg: black;
+  --lightBg: #FFF;
+  --link: #5d5dd1;
+  --linkVisited: #c1a5df;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111;
+    --fg: white;
+    --lightBg: #333;
+    --link: #b7b7ed;
+    --linkVisited: #c1a5df;
+  }
+}
+
+a {
+  color: var(--link);
+}
+
+a:visited {
+  color: var(--linkVisited);
+}
+
+html {
+  background-color: var(--bg);
 }
 
 body {
+  color: var(--fg);
   display: flex;
   flex-direction: column;
   font-family: monospace;
@@ -27,7 +54,7 @@ nav {
 }
 
 pre {
-  background-color: var(--lightBg);
+  background-color: var(--lightBg) !important;
   overflow-x: auto;
   padding: 0.75rem;
 }

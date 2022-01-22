@@ -100,7 +100,7 @@ func (f File) Content() template.HTML {
 		html.WithLineNumbers(true),
 		html.LinkableLineNumbers(true, "l"),
 	)
-	style := styles.Friendly
+	style := styles.DoomOne2
 
 	err = formatter.Format(buf, style, it)
 	if err != nil {
